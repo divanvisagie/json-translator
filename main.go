@@ -1,8 +1,13 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	"github.com/andlabs/ui"
 )
+
+var API_KEY = os.Getenv("GOOGLE_API_KEY")
 
 func createSourceInputBox(window *ui.Window) *ui.Box {
 	sourcePath := ui.NewEntry()
@@ -31,18 +36,34 @@ func createDestinationInputBox(window *ui.Window) *ui.Box {
 }
 
 func createGoogleTranslateSetupBox() *ui.Box {
+	entry := ui.NewEntry()
+	entry.SetText(API_KEY)
+
+	updateButton := ui.NewButton("Update")
+
 	box := ui.NewVerticalBox()
 	box.Append(ui.NewLabel("Google Translate API key:"), false)
-	box.Append(ui.NewEntry(), true)
+	box.Append(entry, true)
+	box.Append(updateButton, false)
+
 	return box
 }
 
 func main() {
 	err := ui.Main(func() {
-		window := ui.NewWindow("JSON Translator", 500, 200, false)
-		greeting := ui.NewLabel("")
-
+		window := ui.NewWindow("JSON Translator", 500, 500, false)
 		box := ui.NewVerticalBox()
+		outputLabel := ui.NewLabel("")
+		translateButton := ui.NewButton("Translate")
+
+		translateButton.OnClicked(func(*ui.Button) {
+			word := "Cheese"
+			translation, err := TranslateText("ru", word, API_KEY)
+			if err != nil {
+				log.Fatalln(err.Error())
+			}
+			outputLabel.SetText("Translated! " + word + " to " + translation)
+		})
 
 		box.Append(createGoogleTranslateSetupBox(), false)
 
@@ -50,7 +71,8 @@ func main() {
 		box.Append(createSourceInputBox(window), false)
 		box.Append(ui.NewLabel("Select Destination File:"), false)
 		box.Append(createDestinationInputBox(window), false)
-		box.Append(greeting, false)
+		box.Append(translateButton, false)
+		box.Append(outputLabel, false)
 
 		window.SetChild(box)
 
