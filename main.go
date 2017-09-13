@@ -4,30 +4,56 @@ import (
 	"github.com/andlabs/ui"
 )
 
+func createSourceInputBox(window *ui.Window) *ui.Box {
+	sourcePath := ui.NewEntry()
+	openSourceButton := ui.NewButton("...")
+	sourceBox := ui.NewHorizontalBox()
+	sourceBox.Append(sourcePath, true)
+	sourceBox.Append(openSourceButton, false)
+	openSourceButton.OnClicked(func(*ui.Button) {
+		path := ui.OpenFile(window)
+		sourcePath.SetText(path)
+	})
+	return sourceBox
+}
+
+func createDestinationInputBox(window *ui.Window) *ui.Box {
+	sourcePath := ui.NewEntry()
+	openSourceButton := ui.NewButton("...")
+	sourceBox := ui.NewHorizontalBox()
+	sourceBox.Append(sourcePath, true)
+	sourceBox.Append(openSourceButton, false)
+	openSourceButton.OnClicked(func(*ui.Button) {
+		path := ui.SaveFile(window)
+		sourcePath.SetText(path)
+	})
+	return sourceBox
+}
+
+func createGoogleTranslateSetupBox() *ui.Box {
+	box := ui.NewVerticalBox()
+	box.Append(ui.NewLabel("Google Translate API key:"), false)
+	box.Append(ui.NewEntry(), true)
+	return box
+}
+
 func main() {
 	err := ui.Main(func() {
-		sourcePath := ui.NewEntry()
-		openSourceButton := ui.NewButton("...")
+		window := ui.NewWindow("JSON Translator", 500, 200, false)
 		greeting := ui.NewLabel("")
-
-		sourceBox := ui.NewHorizontalBox()
-		sourceBox.Append(sourcePath, true)
-		sourceBox.Append(openSourceButton, false)
 
 		box := ui.NewVerticalBox()
 
+		box.Append(createGoogleTranslateSetupBox(), false)
+
 		box.Append(ui.NewLabel("Select Source File:"), false)
-		box.Append(sourceBox, false)
+		box.Append(createSourceInputBox(window), false)
+		box.Append(ui.NewLabel("Select Destination File:"), false)
+		box.Append(createDestinationInputBox(window), false)
 		box.Append(greeting, false)
 
-		window := ui.NewWindow("Hello", 500, 500, false)
-
 		window.SetChild(box)
-		openSourceButton.OnClicked(func(*ui.Button) {
-			path := ui.OpenFile(window)
-			greeting.SetText("Selected: " + path)
-			sourcePath.SetText(path)
-		})
+
 		window.OnClosing(func(*ui.Window) bool {
 			ui.Quit()
 			return true
