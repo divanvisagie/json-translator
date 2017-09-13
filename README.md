@@ -8,5 +8,5 @@ A tool that translates json files via Google Translate
 Running 
 
 ```sh
-go run .\main.go .\translation.go
+go run .\main.go .\translation.go .\parser.go
 ```

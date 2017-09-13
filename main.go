@@ -7,7 +7,8 @@ import (
 	"github.com/andlabs/ui"
 )
 
-var API_KEY = os.Getenv("GOOGLE_API_KEY")
+var API_KEY string = os.Getenv("GOOGLE_API_KEY")
+var sourceFilePath string
 
 func createSourceInputBox(window *ui.Window) *ui.Box {
 	sourcePath := ui.NewEntry()
@@ -16,8 +17,8 @@ func createSourceInputBox(window *ui.Window) *ui.Box {
 	sourceBox.Append(sourcePath, true)
 	sourceBox.Append(openSourceButton, false)
 	openSourceButton.OnClicked(func(*ui.Button) {
-		path := ui.OpenFile(window)
-		sourcePath.SetText(path)
+		sourceFilePath = ui.OpenFile(window)
+		sourcePath.SetText(sourceFilePath)
 	})
 	return sourceBox
 }
@@ -61,6 +62,9 @@ func main() {
 		translateButton := ui.NewButton("Translate")
 
 		translateButton.OnClicked(func(*ui.Button) {
+
+			ReadJsonFromFile(sourceFilePath)
+
 			word := "Cheese"
 			translation, err := TranslateText("fr", word, API_KEY)
 			if err != nil {
