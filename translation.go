@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	"cloud.google.com/go/translate"
 	"golang.org/x/text/language"
@@ -10,6 +11,8 @@ import (
 
 func TranslateText(targetLanguage, text, apiKey string) (string, error) {
 	ctx := context.Background()
+
+	fmt.Println(apiKey)
 
 	lang, err := language.Parse(targetLanguage)
 	if err != nil {

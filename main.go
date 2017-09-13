@@ -40,6 +40,10 @@ func createGoogleTranslateSetupBox() *ui.Box {
 	entry.SetText(API_KEY)
 
 	updateButton := ui.NewButton("Update")
+	updateButton.OnClicked(func(*ui.Button) {
+		os.Setenv("GOOGLE_API_KEY", entry.Text())
+		API_KEY = os.Getenv("GOOGLE_API_KEY")
+	})
 
 	box := ui.NewVerticalBox()
 	box.Append(ui.NewLabel("Google Translate API key:"), false)
@@ -58,7 +62,7 @@ func main() {
 
 		translateButton.OnClicked(func(*ui.Button) {
 			word := "Cheese"
-			translation, err := TranslateText("ru", word, API_KEY)
+			translation, err := TranslateText("fr", word, API_KEY)
 			if err != nil {
 				log.Fatalln(err.Error())
 			}
