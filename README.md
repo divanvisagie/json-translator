@@ -1,4 +1,4 @@
-JSON-translator
+# JSON-translator
 
 A tool that translates json files via Google Translate
 
