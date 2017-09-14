@@ -8,7 +8,16 @@ import (
 	"os"
 )
 
-func ReadJsonFromFile(file string) {
+type JSONFile struct {
+	raw  []byte
+	path string
+}
+
+func (*JSONFile) ToString() string {
+	return "Not Implemented"
+}
+
+func ReadJsonFromFile(file string) JSONFile {
 	fmt.Println("reading", file)
 	raw, err := ioutil.ReadFile(file)
 	if err != nil {
@@ -29,5 +38,10 @@ func ReadJsonFromFile(file string) {
 		for k, v := range object {
 			fmt.Println(k, v)
 		}
+	}
+
+	return JSONFile{
+		raw,
+		file,
 	}
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -65,7 +66,11 @@ func main() {
 		translateButton := ui.NewButton("Translate")
 
 		translateButton.OnClicked(func(*ui.Button) {
-			ReadJsonFromFile(sourceFilePath)
+
+			jsonFile := ReadJsonFromFile(sourceFilePath)
+
+			fmt.Println(jsonFile.ToString())
+
 			word := "Cheese"
 			translation, err := TranslateText("fr", word, apiKey)
 			if err != nil {
