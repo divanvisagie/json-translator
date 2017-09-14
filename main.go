@@ -14,6 +14,7 @@ func createSourceInputBox(window *ui.Window) *ui.Box {
 	sourcePath := ui.NewEntry()
 	openSourceButton := ui.NewButton("...")
 	sourceBox := ui.NewHorizontalBox()
+	sourceBox.SetPadded(false)
 	sourceBox.Append(sourcePath, true)
 	sourceBox.Append(openSourceButton, false)
 	openSourceButton.OnClicked(func(*ui.Button) {
@@ -27,6 +28,7 @@ func createDestinationInputBox(window *ui.Window) *ui.Box {
 	sourcePath := ui.NewEntry()
 	openSourceButton := ui.NewButton("...")
 	sourceBox := ui.NewHorizontalBox()
+	sourceBox.SetPadded(false)
 	sourceBox.Append(sourcePath, true)
 	sourceBox.Append(openSourceButton, false)
 	openSourceButton.OnClicked(func(*ui.Button) {
@@ -47,6 +49,7 @@ func createGoogleTranslateSetupBox() *ui.Box {
 	})
 
 	box := ui.NewVerticalBox()
+	box.SetPadded(true)
 	box.Append(ui.NewLabel("Google Translate API key:"), false)
 	box.Append(entry, true)
 	box.Append(updateButton, false)
@@ -83,6 +86,7 @@ func main() {
 		box.Append(outputLabel, false)
 
 		window.SetChild(box)
+		window.SetMargined(true)
 
 		window.OnClosing(func(*ui.Window) bool {
 			ui.Quit()
