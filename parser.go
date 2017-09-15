@@ -13,8 +13,8 @@ type JSONFile struct {
 	path string
 }
 
-func (*JSONFile) ToString() string {
-	return "Not Implemented"
+func (j *JSONFile) ToString() string {
+	return string(j.raw)
 }
 
 func ReadJsonFromFile(file string) JSONFile {
