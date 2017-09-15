@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/andlabs/ui"
@@ -65,18 +64,22 @@ func main() {
 		outputLabel := ui.NewLabel("")
 		translateButton := ui.NewButton("Translate")
 
+		ch := make(chan string)
+
 		translateButton.OnClicked(func(*ui.Button) {
 
 			jsonFile := ReadJsonFromFile(sourceFilePath)
 
+			ch <- jsonFile.ToString()
+
 			fmt.Println(jsonFile.ToString())
 
-			word := "Cheese"
-			translation, err := TranslateText("fr", word, apiKey)
-			if err != nil {
-				log.Fatalln(err.Error())
-			}
-			outputLabel.SetText("Translated! " + word + " to " + translation)
+			// word := "Cheese"
+			// translation, err := TranslateText("fr", word, apiKey)
+			// if err != nil {
+			// 	log.Fatalln(err.Error())
+			// }
+			// outputLabel.SetText("Translated! " + word + " to " + translation)
 		})
 
 		box.Append(createGoogleTranslateSetupBox(), false)
@@ -87,12 +90,14 @@ func main() {
 		box.Append(createDestinationInputBox(window), false)
 		box.Append(translateButton, false)
 		box.Append(outputLabel, false)
+		box.Append(CreateEditor(ch), false)
 
 		window.SetChild(box)
 		window.SetMargined(true)
 
 		window.OnClosing(func(*ui.Window) bool {
 			ui.Quit()
+			close(ch)
 			return true
 		})
 		window.Show()
