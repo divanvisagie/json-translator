@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/protonmail/ui"
+	"github.com/divanvisagie/ui"
 )
 
 var apiKey string = os.Getenv("GOOGLE_API_KEY")

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/protonmail/ui"
+	"github.com/divanvisagie/ui"
 )
 
 func CreateEditor(ch chan *JSONFile) *ui.Box {
