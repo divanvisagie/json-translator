@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/andlabs/ui"
+	"github.com/protonmail/ui"
 )
 
 var apiKey string = os.Getenv("GOOGLE_API_KEY")
@@ -64,13 +64,13 @@ func main() {
 		outputLabel := ui.NewLabel("")
 		translateButton := ui.NewButton("Translate")
 
-		ch := make(chan string)
+		jsonChannel := make(chan *JSONFile)
 
 		translateButton.OnClicked(func(*ui.Button) {
 
 			jsonFile := ReadJsonFromFile(sourceFilePath)
 
-			ch <- jsonFile.ToString()
+			jsonChannel <- &jsonFile
 
 			fmt.Println(jsonFile.ToString())
 
@@ -82,6 +82,8 @@ func main() {
 			// outputLabel.SetText("Translated! " + word + " to " + translation)
 		})
 
+		editor := CreateEditor(jsonChannel)
+
 		box.Append(createGoogleTranslateSetupBox(), false)
 
 		box.Append(ui.NewLabel("Select Source File:"), false)
@@ -90,14 +92,14 @@ func main() {
 		box.Append(createDestinationInputBox(window), false)
 		box.Append(translateButton, false)
 		box.Append(outputLabel, false)
-		box.Append(CreateEditor(ch), false)
+		box.Append(editor, true)
 
 		window.SetChild(box)
 		window.SetMargined(true)
 
 		window.OnClosing(func(*ui.Window) bool {
 			ui.Quit()
-			close(ch)
+			close(jsonChannel)
 			return true
 		})
 		window.Show()

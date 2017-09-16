@@ -1,18 +1,21 @@
 package main
 
 import (
-	"github.com/andlabs/ui"
+	"github.com/protonmail/ui"
 )
 
-func CreateEditor(ch chan string) *ui.Box {
-	box := ui.NewHorizontalBox()
-	label := ui.NewLabel("Test")
+func CreateEditor(ch chan *JSONFile) *ui.Box {
 
-	box.Append(label, false)
+	box := ui.NewHorizontalBox()
+	box.SetPadded(true)
+	inputJSONControl := ui.NewMultilineEntry()
+	outputJSONControl := ui.NewMultilineEntry()
+	box.Append(inputJSONControl, true)
+	box.Append(outputJSONControl, true)
 
 	go func() {
-		for text := range ch {
-			label.SetText(text)
+		for jsonFile := range ch {
+			inputJSONControl.SetText(jsonFile.ToString())
 		}
 	}()
 
