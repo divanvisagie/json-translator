@@ -17,6 +17,12 @@ func (j *JSONFile) ToString() string {
 	return string(j.raw)
 }
 
+func (j *JSONFile) Parse() ([]map[string]string, error) {
+	translationArray := []map[string]string{}
+	unmarErr := json.Unmarshal(j.raw, &translationArray)
+	return translationArray, unmarErr
+}
+
 func ReadJsonFromFile(file string) JSONFile {
 	fmt.Println("reading", file)
 	raw, err := ioutil.ReadFile(file)
