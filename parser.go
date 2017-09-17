@@ -19,8 +19,19 @@ func (j *JSONFile) ToString() string {
 
 func (j *JSONFile) Parse() ([]map[string]string, error) {
 	translationArray := []map[string]string{}
-	unmarErr := json.Unmarshal(j.raw, &translationArray)
-	return translationArray, unmarErr
+	err := json.Unmarshal(j.raw, &translationArray)
+	return translationArray, err
+}
+
+func (j *JSONFile) Keys() []string {
+	parsed, _ := j.Parse()
+	first := parsed[0]
+
+	keys := make([]string, 0, len(first))
+	for k := range first {
+		keys = append(keys, k)
+	}
+	return keys
 }
 
 func ReadJsonFromFile(file string) JSONFile {

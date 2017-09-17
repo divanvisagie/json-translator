@@ -74,12 +74,6 @@ func main() {
 
 			fmt.Println(jsonFile.ToString())
 
-			// word := "Cheese"
-			// translation, err := TranslateText("fr", word, apiKey)
-			// if err != nil {
-			// 	log.Fatalln(err.Error())
-			// }
-			// outputLabel.SetText("Translated! " + word + " to " + translation)
 		})
 
 		editor := CreateEditor(jsonChannel)
