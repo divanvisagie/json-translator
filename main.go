@@ -26,7 +26,7 @@ func createSourceInputBox(window *ui.Window) *ui.Box {
 
 func createDestinationInputBox(window *ui.Window) *ui.Box {
 	sourcePath := ui.NewEntry()
-	openSourceButton := ui.NewButton("...")
+	openSourceButton := ui.NewButton("Save")
 	sourceBox := ui.NewHorizontalBox()
 	sourceBox.SetPadded(false)
 	sourceBox.Append(sourcePath, true)
@@ -89,10 +89,10 @@ func main() {
 		box.Append(ui.NewLabel("Select Source File:"), false)
 		box.Append(createSourceInputBox(window), false)
 		box.Append(ui.NewLabel("Select Destination File:"), false)
-		box.Append(createDestinationInputBox(window), false)
 		box.Append(translateButton, false)
 		box.Append(outputLabel, false)
 		box.Append(editor, true)
+		box.Append(createDestinationInputBox(window), false)
 
 		window.SetChild(box)
 		window.SetMargined(true)
