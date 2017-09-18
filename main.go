@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/divanvisagie/ui"
@@ -10,7 +11,7 @@ import (
 var apiKey string = os.Getenv("GOOGLE_API_KEY")
 var sourceFilePath string
 
-func createSourceInputBox(window *ui.Window) *ui.Box {
+func createSourceInputBox(c chan *JSONFile, window *ui.Window) *ui.Box {
 	sourcePath := ui.NewEntry()
 	openSourceButton := ui.NewButton("...")
 	sourceBox := ui.NewHorizontalBox()
@@ -20,6 +21,10 @@ func createSourceInputBox(window *ui.Window) *ui.Box {
 	openSourceButton.OnClicked(func(*ui.Button) {
 		sourceFilePath = ui.OpenFile(window)
 		sourcePath.SetText(sourceFilePath)
+
+		jsonFile := ReadJsonFromFile(sourceFilePath)
+		c <- &jsonFile
+		fmt.Println(jsonFile.ToString())
 	})
 	return sourceBox
 }
@@ -62,29 +67,16 @@ func main() {
 		window := ui.NewWindow("JSON Translator", 500, 500, false)
 		box := ui.NewVerticalBox()
 		outputLabel := ui.NewLabel("")
-		translateButton := ui.NewButton("Translate")
 
 		jsonChannel := make(chan *JSONFile)
-
-		translateButton.OnClicked(func(*ui.Button) {
-
-			jsonFile := ReadJsonFromFile(sourceFilePath)
-
-			jsonChannel <- &jsonFile
-
-			fmt.Println(jsonFile.ToString())
-
-		})
 
 		editor := CreateEditor(jsonChannel)
 
 		box.Append(createGoogleTranslateSetupBox(), false)
-
 		box.Append(ui.NewLabel("Select Source File:"), false)
-		box.Append(createSourceInputBox(window), false)
+		box.Append(createSourceInputBox(jsonChannel, window), false)
 		box.Append(ui.NewLabel("Select Destination File:"), false)
 		box.Append(createDestinationInputBox(window), false)
-		box.Append(translateButton, false)
 		box.Append(outputLabel, false)
 		box.Append(editor, true)
 
@@ -99,6 +91,6 @@ func main() {
 		window.Show()
 	})
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 }

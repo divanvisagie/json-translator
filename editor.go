@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -15,15 +14,6 @@ func translatePhrase(word string) string {
 		log.Fatalln(err.Error())
 	}
 	return translation
-}
-
-func jsonPrettyPrint(in string) string {
-	var out bytes.Buffer
-	err := json.Indent(&out, []byte(in), "", "\t")
-	if err != nil {
-		return in
-	}
-	return out.String()
 }
 
 func translateJsonWithKey(jsonF *JSONFile, key string) string {
@@ -41,7 +31,7 @@ func translateJsonWithKey(jsonF *JSONFile, key string) string {
 	b, _ := json.Marshal(parsed)
 
 	fmt.Println(string(b))
-	return jsonPrettyPrint(string(b))
+	return string(b)
 }
 
 func CreateEditor(ch chan *JSONFile) *ui.Box {
