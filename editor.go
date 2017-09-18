@@ -16,7 +16,7 @@ func translatePhrase(word string) (string, error) {
 	return translation, nil
 }
 
-func translateJsonWithKey(jsonF *JSONFile, key string) string {
+func translateJSONWithKey(jsonF *JSONFile, key string) string {
 	parsed, _ := jsonF.Parse()
 	for _, object := range parsed {
 		for k, v := range object {
@@ -37,6 +37,7 @@ func translateJsonWithKey(jsonF *JSONFile, key string) string {
 	return string(b)
 }
 
+// CreateEditor creates a box that contains all the json editing related stuff
 func CreateEditor(ch chan *JSONFile) *ui.Box {
 
 	var currentJSONFile *JSONFile
@@ -58,9 +59,9 @@ func CreateEditor(ch chan *JSONFile) *ui.Box {
 		translationkey := currentJSONFile.Keys()[itemIndex]
 
 		fmt.Println("Selected Item", translationkey)
-		translatedJsonString := translateJsonWithKey(currentJSONFile, translationkey)
+		translatedJSONString := translateJSONWithKey(currentJSONFile, translationkey)
 
-		outputJSONControl.SetText(translatedJsonString)
+		outputJSONControl.SetText(translatedJSONString)
 	})
 
 	go func() {
@@ -69,7 +70,7 @@ func CreateEditor(ch chan *JSONFile) *ui.Box {
 			inputJSONControl.SetText(jsonFile.ToString())
 			parsed, _ := jsonFile.Parse()
 			object := parsed[0]
-			for k, _ := range object {
+			for k := range object {
 				combobox.Append(k)
 			}
 		}
