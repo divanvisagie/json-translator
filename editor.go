@@ -39,7 +39,7 @@ func translateJSONWithKey(jsonF *JSONFile, key string) string {
 }
 
 // CreateEditor creates a box that contains all the json editing related stuff
-func CreateEditor(ch chan *JSONFile) *ui.Box {
+func CreateEditor() *ui.Box {
 
 	var currentJSONFile *JSONFile
 
@@ -66,7 +66,7 @@ func CreateEditor(ch chan *JSONFile) *ui.Box {
 	})
 
 	go func() {
-		for jsonFile := range ch {
+		for jsonFile := range jsonFileStore.channel {
 			currentJSONFile = jsonFile
 			inputJSONControl.SetText(jsonFile.ToString())
 			parsed, _ := jsonFile.Parse()

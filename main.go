@@ -12,8 +12,9 @@ var apiKey string = os.Getenv("GOOGLE_API_KEY")
 var sourceFilePath string
 var destinationFilePath string
 var window *ui.Window
-var jsonChannel chan *JSONFile
 var languageCode string
+
+var jsonFileStore *JSONFileStore
 
 func createSourceInputBox() *ui.Box {
 	sourcePath := ui.NewEntry()
@@ -27,7 +28,7 @@ func createSourceInputBox() *ui.Box {
 		sourcePath.SetText(sourceFilePath)
 
 		jsonFile := ReadJsonFromFile(sourceFilePath)
-		jsonChannel <- &jsonFile
+		jsonFileStore.channel <- &jsonFile
 		fmt.Println(jsonFile.ToString())
 	})
 	return sourceBox
@@ -94,9 +95,9 @@ func main() {
 
 		saveButton := ui.NewButton("Save")
 
-		jsonChannel = make(chan *JSONFile)
+		jsonFileStore = CreateJSONFileStore()
 
-		editor := CreateEditor(jsonChannel)
+		editor := CreateEditor()
 
 		box.Append(createGoogleTranslateSetupBox(), false)
 		box.Append(ui.NewLabel("Select Source File:"), false)
@@ -112,7 +113,7 @@ func main() {
 
 		window.OnClosing(func(*ui.Window) bool {
 			ui.Quit()
-			close(jsonChannel)
+			jsonFileStore.Destroy()
 			return true
 		})
 		window.Show()
