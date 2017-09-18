@@ -12,9 +12,9 @@ var apiKey string = os.Getenv("GOOGLE_API_KEY")
 var sourceFilePath string
 var destinationFilePath string
 var window *ui.Window
-var languageCode string
 
 var jsonFileStore *JSONFileStore
+var targetLanguageStore *StringStore
 
 func createSourceInputBox() *ui.Box {
 	sourcePath := ui.NewEntry()
@@ -28,7 +28,7 @@ func createSourceInputBox() *ui.Box {
 		sourcePath.SetText(sourceFilePath)
 
 		jsonFile := ReadJsonFromFile(sourceFilePath)
-		jsonFileStore.channel <- &jsonFile
+		jsonFileStore.SetJsonFile(&jsonFile)
 		fmt.Println(jsonFile.ToString())
 	})
 	return sourceBox
@@ -82,7 +82,8 @@ func createLanguageSelector() *ui.Combobox {
 
 	selector.OnSelected(func(c *ui.Combobox) {
 		itemIndex := c.Selected()
-		languageCode = options[itemIndex]
+		languageCode := options[itemIndex]
+		targetLanguageStore.SetValue(languageCode)
 		fmt.Println(languageCode)
 	})
 	return selector
@@ -96,6 +97,7 @@ func main() {
 		saveButton := ui.NewButton("Save")
 
 		jsonFileStore = CreateJSONFileStore()
+		targetLanguageStore = CreateStringStore()
 
 		editor := CreateEditor()
 
@@ -114,6 +116,7 @@ func main() {
 		window.OnClosing(func(*ui.Window) bool {
 			ui.Quit()
 			jsonFileStore.Destroy()
+			targetLanguageStore.Destroy()
 			return true
 		})
 		window.Show()

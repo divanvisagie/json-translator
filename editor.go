@@ -8,7 +8,8 @@ import (
 )
 
 func translatePhrase(word string) (string, error) {
-	translation, err := TranslateText("fr", word, apiKey)
+
+	translation, err := TranslateText(targetLanguageStore.value, word, apiKey)
 	if err != nil {
 		return "", err
 
