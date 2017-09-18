@@ -12,8 +12,10 @@ var apiKey string = os.Getenv("GOOGLE_API_KEY")
 var sourceFilePath string
 var destinationFilePath string
 var window *ui.Window
+var jsonChannel chan *JSONFile
+var languageCode string
 
-func createSourceInputBox(c chan *JSONFile) *ui.Box {
+func createSourceInputBox() *ui.Box {
 	sourcePath := ui.NewEntry()
 	openSourceButton := ui.NewButton("...")
 	sourceBox := ui.NewHorizontalBox()
@@ -25,7 +27,7 @@ func createSourceInputBox(c chan *JSONFile) *ui.Box {
 		sourcePath.SetText(sourceFilePath)
 
 		jsonFile := ReadJsonFromFile(sourceFilePath)
-		c <- &jsonFile
+		jsonChannel <- &jsonFile
 		fmt.Println(jsonFile.ToString())
 	})
 	return sourceBox
@@ -64,24 +66,44 @@ func createGoogleTranslateSetupBox() *ui.Box {
 	return box
 }
 
+func createLanguageSelector() *ui.Combobox {
+
+	options := []string{
+		"fr",
+		"es",
+	}
+
+	selector := ui.NewCombobox()
+
+	for _, l := range options {
+		selector.Append(l)
+	}
+
+	selector.OnSelected(func(c *ui.Combobox) {
+		itemIndex := c.Selected()
+		languageCode = options[itemIndex]
+		fmt.Println(languageCode)
+	})
+	return selector
+}
+
 func main() {
 	err := ui.Main(func() {
 		window = ui.NewWindow("JSON Translator", 500, 500, false)
 		box := ui.NewVerticalBox()
-		outputLabel := ui.NewLabel("")
 
 		saveButton := ui.NewButton("Save")
 
-		jsonChannel := make(chan *JSONFile)
+		jsonChannel = make(chan *JSONFile)
 
 		editor := CreateEditor(jsonChannel)
 
 		box.Append(createGoogleTranslateSetupBox(), false)
 		box.Append(ui.NewLabel("Select Source File:"), false)
-		box.Append(createSourceInputBox(jsonChannel), false)
+		box.Append(createSourceInputBox(), false)
 		box.Append(ui.NewLabel("Select Destination File:"), false)
 		box.Append(createDestinationInputBox(), false)
-		box.Append(outputLabel, false)
+		box.Append(createLanguageSelector(), false)
 		box.Append(editor, true)
 		box.Append(saveButton, false)
 
