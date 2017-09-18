@@ -10,8 +10,9 @@ import (
 
 var apiKey string = os.Getenv("GOOGLE_API_KEY")
 var sourceFilePath string
+var window *ui.Window
 
-func createSourceInputBox(c chan *JSONFile, window *ui.Window) *ui.Box {
+func createSourceInputBox(c chan *JSONFile) *ui.Box {
 	sourcePath := ui.NewEntry()
 	openSourceButton := ui.NewButton("...")
 	sourceBox := ui.NewHorizontalBox()
@@ -29,7 +30,7 @@ func createSourceInputBox(c chan *JSONFile, window *ui.Window) *ui.Box {
 	return sourceBox
 }
 
-func createDestinationInputBox(window *ui.Window) *ui.Box {
+func createDestinationInputBox() *ui.Box {
 	sourcePath := ui.NewEntry()
 	openSourceButton := ui.NewButton("...")
 	sourceBox := ui.NewHorizontalBox()
@@ -64,7 +65,7 @@ func createGoogleTranslateSetupBox() *ui.Box {
 
 func main() {
 	err := ui.Main(func() {
-		window := ui.NewWindow("JSON Translator", 500, 500, false)
+		window = ui.NewWindow("JSON Translator", 500, 500, false)
 		box := ui.NewVerticalBox()
 		outputLabel := ui.NewLabel("")
 
@@ -74,9 +75,9 @@ func main() {
 
 		box.Append(createGoogleTranslateSetupBox(), false)
 		box.Append(ui.NewLabel("Select Source File:"), false)
-		box.Append(createSourceInputBox(jsonChannel, window), false)
+		box.Append(createSourceInputBox(jsonChannel), false)
 		box.Append(ui.NewLabel("Select Destination File:"), false)
-		box.Append(createDestinationInputBox(window), false)
+		box.Append(createDestinationInputBox(), false)
 		box.Append(outputLabel, false)
 		box.Append(editor, true)
 

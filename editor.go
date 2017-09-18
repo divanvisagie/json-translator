@@ -25,7 +25,8 @@ func translateJSONWithKey(jsonF *JSONFile, key string) string {
 			}
 			translated, err := translatePhrase(v)
 			if err != nil {
-				return err.Error()
+				ui.MsgBoxError(window, "Translation Error", err.Error())
+				return ""
 			}
 			fmt.Println("translated:", translated)
 			object[k] = translated
