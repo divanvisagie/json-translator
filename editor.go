@@ -3,17 +3,17 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 
 	"github.com/divanvisagie/ui"
 )
 
-func translatePhrase(word string) string {
+func translatePhrase(word string) (string, error) {
 	translation, err := TranslateText("fr", word, apiKey)
 	if err != nil {
-		log.Fatalln(err.Error())
+		return "", err
+
 	}
-	return translation
+	return translation, nil
 }
 
 func translateJsonWithKey(jsonF *JSONFile, key string) string {
@@ -23,7 +23,10 @@ func translateJsonWithKey(jsonF *JSONFile, key string) string {
 			if k != key {
 				continue
 			}
-			translated := translatePhrase(v)
+			translated, err := translatePhrase(v)
+			if err != nil {
+				return err.Error()
+			}
 			fmt.Println("translated:", translated)
 			object[k] = translated
 		}
@@ -67,7 +70,6 @@ func CreateEditor(ch chan *JSONFile) *ui.Box {
 			parsed, _ := jsonFile.Parse()
 			object := parsed[0]
 			for k, _ := range object {
-				// fmt.Println(k, v)
 				combobox.Append(k)
 			}
 		}
