@@ -10,6 +10,7 @@ import (
 
 var apiKey string = os.Getenv("GOOGLE_API_KEY")
 var sourceFilePath string
+var destinationFilePath string
 var window *ui.Window
 
 func createSourceInputBox(c chan *JSONFile) *ui.Box {
@@ -32,14 +33,14 @@ func createSourceInputBox(c chan *JSONFile) *ui.Box {
 
 func createDestinationInputBox() *ui.Box {
 	sourcePath := ui.NewEntry()
-	openSourceButton := ui.NewButton("...")
+	openDestinationButton := ui.NewButton("...")
 	sourceBox := ui.NewHorizontalBox()
 	sourceBox.SetPadded(false)
 	sourceBox.Append(sourcePath, true)
-	sourceBox.Append(openSourceButton, false)
-	openSourceButton.OnClicked(func(*ui.Button) {
-		path := ui.SaveFile(window)
-		sourcePath.SetText(path)
+	sourceBox.Append(openDestinationButton, false)
+	openDestinationButton.OnClicked(func(*ui.Button) {
+		destinationFilePath = ui.SaveFile(window)
+		sourcePath.SetText(destinationFilePath)
 	})
 	return sourceBox
 }
