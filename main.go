@@ -69,6 +69,8 @@ func main() {
 		box := ui.NewVerticalBox()
 		outputLabel := ui.NewLabel("")
 
+		saveButton := ui.NewButton("Save")
+
 		jsonChannel := make(chan *JSONFile)
 
 		editor := CreateEditor(jsonChannel)
@@ -80,6 +82,7 @@ func main() {
 		box.Append(createDestinationInputBox(), false)
 		box.Append(outputLabel, false)
 		box.Append(editor, true)
+		box.Append(saveButton, false)
 
 		window.SetChild(box)
 		window.SetMargined(true)
