@@ -8,5 +8,6 @@ A tool that translates json files via Google Translate
 Running 
 
 ```sh
-go run .\main.go .\editor.go .\parser.go .\translation.go .\jsonFileStore.go
+go run .\main.go .\editor.go .\parser.go .\translation.go
+.\jsonFileStore.go .\stringStore.go
 ```
