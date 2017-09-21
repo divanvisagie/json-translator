@@ -11,7 +11,6 @@ func translatePhrase(word string) (string, error) {
 	translation, err := TranslateText(targetLanguageStore.value, word, apiKey)
 	if err != nil {
 		return "", err
-
 	}
 	return translation, nil
 }
