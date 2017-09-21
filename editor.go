@@ -40,17 +40,23 @@ func translateJSONWithKey(jsonF *JSONFile, key string) string {
 func createMiddleSection(outputJSONControl *ui.MultilineEntry) (*ui.Box, *ui.Combobox) {
 	box := ui.NewVerticalBox()
 
+	button := ui.NewButton("Translate")
+	button.OnClicked(func(b *ui.Button) {
+		translatedJSONString := translateJSONWithKey(jsonFileStore.file, targetJSONKey.value)
+
+		outputJSONControl.SetText(translatedJSONString)
+	})
+
 	combobox := ui.NewCombobox()
-	box.Append(combobox, true)
+	box.Append(combobox, false)
+	box.Append(button, false)
 	combobox.OnSelected(func(c *ui.Combobox) {
 		itemIndex := c.Selected()
 
 		translationkey := jsonFileStore.file.Keys()[itemIndex]
-
 		fmt.Println("Selected Item", translationkey)
-		translatedJSONString := translateJSONWithKey(jsonFileStore.file, translationkey)
+		targetJSONKey.SetValue(translationkey)
 
-		outputJSONControl.SetText(translatedJSONString)
 	})
 	return box, combobox
 }

@@ -15,6 +15,7 @@ var window *ui.Window
 
 var jsonFileStore *JSONFileStore
 var targetLanguageStore *StringStore
+var targetJSONKey *StringStore
 
 func createSourceInputBox() *ui.Box {
 	sourcePath := ui.NewEntry()
@@ -98,6 +99,7 @@ func main() {
 
 		jsonFileStore = CreateJSONFileStore()
 		targetLanguageStore = CreateStringStore()
+		targetJSONKey = CreateStringStore()
 
 		editor := CreateEditor()
 
