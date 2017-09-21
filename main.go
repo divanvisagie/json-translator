@@ -10,14 +10,13 @@ import (
 )
 
 var apiKey = os.Getenv("GOOGLE_API_KEY")
-var sourceFilePath string
-var destinationFilePath string
 var window *ui.Window
 
 var jsonFileStore *JSONFileStore
 var targetLanguageStore *StringStore
 var targetJSONKeyStore *StringStore
 var sourceFilePathStore *StringStore
+var destinationFilePathStore *StringStore
 
 func guessTarget() string {
 	if sourceFilePathStore.value == "" {
@@ -44,9 +43,10 @@ func createSourceInputBox() *ui.Box {
 			jsonFileStore.SetJsonFile(&jsonFile)
 			fmt.Println(jsonFile.ToString())
 
-			guess := guessTarget()
-			fmt.Println(guess)
-
+			if destinationFilePathStore.value == "" {
+				guess := guessTarget()
+				destinationFilePathStore.SetValue(guess)
+			}
 		}
 	}()
 
@@ -58,7 +58,7 @@ func createSourceInputBox() *ui.Box {
 	sourceBox.Append(sourcePath, true)
 	sourceBox.Append(openSourceButton, false)
 	openSourceButton.OnClicked(func(*ui.Button) {
-		sourceFilePath = ui.OpenFile(window)
+		sourceFilePath := ui.OpenFile(window)
 		sourceFilePathStore.SetValue(sourceFilePath)
 	})
 
@@ -68,13 +68,19 @@ func createSourceInputBox() *ui.Box {
 func createDestinationInputBox() *ui.Box {
 	sourcePath := ui.NewEntry()
 	openDestinationButton := ui.NewButton("...")
-	destinationFilePath = ""
 	sourceBox := ui.NewHorizontalBox()
 	sourceBox.SetPadded(false)
 	sourceBox.Append(sourcePath, true)
 	sourceBox.Append(openDestinationButton, false)
+
+	go func() {
+		for destination := range destinationFilePathStore.channel {
+			sourcePath.SetText(destination)
+		}
+	}()
+
 	openDestinationButton.OnClicked(func(*ui.Button) {
-		destinationFilePath = ui.SaveFile(window)
+		destinationFilePath := ui.SaveFile(window)
 		sourcePath.SetText(destinationFilePath)
 	})
 	return sourceBox
@@ -117,6 +123,11 @@ func createLanguageSelector() *ui.Combobox {
 		languageCode := options[itemIndex]
 		targetLanguageStore.SetValue(languageCode)
 		fmt.Println(languageCode)
+
+		if destinationFilePathStore.value == "" {
+			guess := guessTarget()
+			destinationFilePathStore.SetValue(guess)
+		}
 	})
 	return selector
 }
@@ -132,6 +143,7 @@ func main() {
 		targetLanguageStore = CreateStringStore()
 		targetJSONKeyStore = CreateStringStore()
 		sourceFilePathStore = CreateStringStore()
+		destinationFilePathStore = CreateStringStore()
 
 		editor := CreateEditor()
 
@@ -153,6 +165,7 @@ func main() {
 			targetLanguageStore.Destroy()
 			targetJSONKeyStore.Destroy()
 			sourceFilePathStore.Destroy()
+			destinationFilePathStore.Destroy()
 			return true
 		})
 		window.Show()
