@@ -42,7 +42,7 @@ func createMiddleSection(outputJSONControl *ui.MultilineEntry) (*ui.Box, *ui.Com
 
 	button := ui.NewButton("Translate")
 	button.OnClicked(func(b *ui.Button) {
-		translatedJSONString := translateJSONWithKey(jsonFileStore.file, targetJSONKey.value)
+		translatedJSONString := translateJSONWithKey(jsonFileStore.file, targetJSONKeyStore.value)
 
 		outputJSONControl.SetText(translatedJSONString)
 	})
@@ -55,7 +55,7 @@ func createMiddleSection(outputJSONControl *ui.MultilineEntry) (*ui.Box, *ui.Com
 
 		translationkey := jsonFileStore.file.Keys()[itemIndex]
 		fmt.Println("Selected Item", translationkey)
-		targetJSONKey.SetValue(translationkey)
+		targetJSONKeyStore.SetValue(translationkey)
 
 	})
 	return box, combobox

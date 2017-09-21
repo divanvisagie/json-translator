@@ -15,10 +15,24 @@ var window *ui.Window
 
 var jsonFileStore *JSONFileStore
 var targetLanguageStore *StringStore
-var targetJSONKey *StringStore
+var targetJSONKeyStore *StringStore
+var sourceFilePathStore *StringStore
 
 func createSourceInputBox() *ui.Box {
 	sourcePath := ui.NewEntry()
+
+	go func() {
+		for sourceFilePath := range sourceFilePathStore.channel {
+			sourcePath.SetText(sourceFilePath)
+			fmt.Println("Load file:", sourceFilePath)
+			jsonFile := ReadJsonFromFile(sourceFilePath)
+			jsonFileStore.SetJsonFile(&jsonFile)
+			fmt.Println(jsonFile.ToString())
+		}
+	}()
+
+	sourceFilePathStore.SetValue("")
+
 	openSourceButton := ui.NewButton("...")
 	sourceBox := ui.NewHorizontalBox()
 	sourceBox.SetPadded(false)
@@ -26,12 +40,9 @@ func createSourceInputBox() *ui.Box {
 	sourceBox.Append(openSourceButton, false)
 	openSourceButton.OnClicked(func(*ui.Button) {
 		sourceFilePath = ui.OpenFile(window)
-		sourcePath.SetText(sourceFilePath)
-
-		jsonFile := ReadJsonFromFile(sourceFilePath)
-		jsonFileStore.SetJsonFile(&jsonFile)
-		fmt.Println(jsonFile.ToString())
+		sourceFilePathStore.SetValue(sourceFilePath)
 	})
+
 	return sourceBox
 }
 
@@ -99,7 +110,8 @@ func main() {
 
 		jsonFileStore = CreateJSONFileStore()
 		targetLanguageStore = CreateStringStore()
-		targetJSONKey = CreateStringStore()
+		targetJSONKeyStore = CreateStringStore()
+		sourceFilePathStore = CreateStringStore()
 
 		editor := CreateEditor()
 
@@ -119,6 +131,8 @@ func main() {
 			ui.Quit()
 			jsonFileStore.Destroy()
 			targetLanguageStore.Destroy()
+			targetJSONKeyStore.Destroy()
+			sourceFilePathStore.Destroy()
 			return true
 		})
 		window.Show()
