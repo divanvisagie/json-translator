@@ -8,7 +8,6 @@ import (
 )
 
 func translatePhrase(word string) (string, error) {
-
 	translation, err := TranslateText(targetLanguageStore.value, word, apiKey)
 	if err != nil {
 		return "", err
@@ -39,36 +38,40 @@ func translateJSONWithKey(jsonF *JSONFile, key string) string {
 	return string(b)
 }
 
+func createMiddleSection(outputJSONControl *ui.MultilineEntry) (*ui.Box, *ui.Combobox) {
+	box := ui.NewVerticalBox()
+
+	combobox := ui.NewCombobox()
+	box.Append(combobox, true)
+	combobox.OnSelected(func(c *ui.Combobox) {
+		itemIndex := c.Selected()
+
+		translationkey := jsonFileStore.file.Keys()[itemIndex]
+
+		fmt.Println("Selected Item", translationkey)
+		translatedJSONString := translateJSONWithKey(jsonFileStore.file, translationkey)
+
+		outputJSONControl.SetText(translatedJSONString)
+	})
+	return box, combobox
+}
+
 // CreateEditor creates a box that contains all the json editing related stuff
 func CreateEditor() *ui.Box {
-
-	var currentJSONFile *JSONFile
 
 	box := ui.NewHorizontalBox()
 	box.SetPadded(true)
 	inputJSONControl := ui.NewMultilineEntry()
 	outputJSONControl := ui.NewMultilineEntry()
 
-	combobox := ui.NewCombobox()
+	middleBox, combobox := createMiddleSection(outputJSONControl)
 
 	box.Append(inputJSONControl, true)
-	box.Append(combobox, true)
+	box.Append(middleBox, true)
 	box.Append(outputJSONControl, true)
-
-	combobox.OnSelected(func(c *ui.Combobox) {
-		itemIndex := c.Selected()
-
-		translationkey := currentJSONFile.Keys()[itemIndex]
-
-		fmt.Println("Selected Item", translationkey)
-		translatedJSONString := translateJSONWithKey(currentJSONFile, translationkey)
-
-		outputJSONControl.SetText(translatedJSONString)
-	})
 
 	go func() {
 		for jsonFile := range jsonFileStore.channel {
-			currentJSONFile = jsonFile
 			inputJSONControl.SetText(jsonFile.ToString())
 			parsed, _ := jsonFile.Parse()
 			object := parsed[0]
