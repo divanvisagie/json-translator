@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/divanvisagie/ui"
 )
@@ -18,6 +19,20 @@ var targetLanguageStore *StringStore
 var targetJSONKeyStore *StringStore
 var sourceFilePathStore *StringStore
 
+func guessTarget() string {
+	if sourceFilePathStore.value == "" {
+		return ""
+	}
+	if targetLanguageStore.value == "" {
+		return ""
+	}
+
+	p := sourceFilePathStore.value
+	split := strings.Split(p, ".")
+	split[0] += ("-" + targetLanguageStore.value)
+	return strings.Join(split, ".")
+}
+
 func createSourceInputBox() *ui.Box {
 	sourcePath := ui.NewEntry()
 
@@ -28,6 +43,10 @@ func createSourceInputBox() *ui.Box {
 			jsonFile := ReadJsonFromFile(sourceFilePath)
 			jsonFileStore.SetJsonFile(&jsonFile)
 			fmt.Println(jsonFile.ToString())
+
+			guess := guessTarget()
+			fmt.Println(guess)
+
 		}
 	}()
 
@@ -49,6 +68,7 @@ func createSourceInputBox() *ui.Box {
 func createDestinationInputBox() *ui.Box {
 	sourcePath := ui.NewEntry()
 	openDestinationButton := ui.NewButton("...")
+	destinationFilePath = ""
 	sourceBox := ui.NewHorizontalBox()
 	sourceBox.SetPadded(false)
 	sourceBox.Append(sourcePath, true)
