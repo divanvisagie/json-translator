@@ -67,6 +67,8 @@ func createSourceInputBox() *ui.Box {
 
 func createDestinationInputBox() *ui.Box {
 	sourcePath := ui.NewEntry()
+	destinationFilePathStore.SetValue("")
+
 	openDestinationButton := ui.NewButton("...")
 	sourceBox := ui.NewHorizontalBox()
 	sourceBox.SetPadded(false)
