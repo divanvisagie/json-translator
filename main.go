@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -17,6 +18,7 @@ var targetLanguageStore *StringStore
 var targetJSONKeyStore *StringStore
 var sourceFilePathStore *StringStore
 var destinationFilePathStore *StringStore
+var translatedJSONFileStore *StringStore
 
 func guessTarget() string {
 	if sourceFilePathStore.value == "" {
@@ -141,11 +143,22 @@ func main() {
 
 		saveButton := ui.NewButton("Save")
 
+		saveButton.OnClicked(func(b *ui.Button) {
+			if destinationFilePathStore.value == "" {
+				ui.MsgBoxError(window, "Target path error", "Target path is not defined")
+				return
+			}
+
+			data := []byte(translatedJSONFileStore.value)
+			ioutil.WriteFile(destinationFilePathStore.value, data, 0644)
+		})
+
 		jsonFileStore = CreateJSONFileStore()
 		targetLanguageStore = CreateStringStore()
 		targetJSONKeyStore = CreateStringStore()
 		sourceFilePathStore = CreateStringStore()
 		destinationFilePathStore = CreateStringStore()
+		translatedJSONFileStore = CreateStringStore()
 
 		editor := CreateEditor()
 
@@ -168,6 +181,7 @@ func main() {
 			targetJSONKeyStore.Destroy()
 			sourceFilePathStore.Destroy()
 			destinationFilePathStore.Destroy()
+			translatedJSONFileStore.Destroy()
 			return true
 		})
 		window.Show()

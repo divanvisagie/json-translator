@@ -45,6 +45,7 @@ func createMiddleSection(outputJSONControl *ui.MultilineEntry) (*ui.Box, *ui.Com
 		translatedJSONString := translateJSONWithKey(jsonFileStore.file, targetJSONKeyStore.value)
 
 		outputJSONControl.SetText(translatedJSONString)
+		translatedJSONFileStore.SetValue(translatedJSONString)
 	})
 
 	combobox := ui.NewCombobox()
