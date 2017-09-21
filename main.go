@@ -8,7 +8,7 @@ import (
 	"github.com/divanvisagie/ui"
 )
 
-var apiKey string = os.Getenv("GOOGLE_API_KEY")
+var apiKey = os.Getenv("GOOGLE_API_KEY")
 var sourceFilePath string
 var destinationFilePath string
 var window *ui.Window
