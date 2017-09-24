@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"cloud.google.com/go/translate"
 	"github.com/divanvisagie/ui"
 )
 
@@ -109,22 +110,27 @@ func createGoogleTranslateSetupBox() *ui.Box {
 	return box
 }
 
+func populateLanguages() ([]translate.Language, error) {
+	if apiKey == "" {
+		return nil, fmt.Errorf("apikey is empty")
+	}
+	languages, err := ListSupportedLanguages(apiKey, "en")
+	return languages, err
+}
+
 func createLanguageSelector() *ui.Combobox {
 
-	options := []string{
-		"fr",
-		"es",
-	}
+	options, _ := populateLanguages()
 
 	selector := ui.NewCombobox()
 
 	for _, l := range options {
-		selector.Append(l)
+		selector.Append(l.Tag.String())
 	}
 
 	selector.OnSelected(func(c *ui.Combobox) {
 		itemIndex := c.Selected()
-		languageCode := options[itemIndex]
+		languageCode := options[itemIndex].Tag.String()
 		targetLanguageStore.SetValue(languageCode)
 		fmt.Println(languageCode)
 
