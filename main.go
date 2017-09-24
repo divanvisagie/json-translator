@@ -122,6 +122,11 @@ func createLanguageSelector() *ui.Combobox {
 
 	options, _ := populateLanguages()
 
+	validKey := IsAPIKeyValid(apiKey)
+	if !validKey {
+		ui.MsgBoxError(window, "Error", "API key is not valid, set GOOGLE_API_KEY in your environment variables")
+	}
+
 	selector := ui.NewCombobox()
 
 	for _, l := range options {

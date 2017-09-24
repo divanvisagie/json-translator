@@ -32,6 +32,15 @@ func TranslateText(targetLanguage, text, apiKey string) (string, error) {
 	return resp[0].Text, nil
 }
 
+//IsAPIKeyValid checks if the api key works
+func IsAPIKeyValid(apiKey string) bool {
+	_, err := TranslateText("fr", "hello", apiKey)
+	if err != nil {
+		return false
+	}
+	return true
+}
+
 func ListSupportedLanguages(apiKey string, targetLanguage string) ([]translate.Language, error) {
 	ctx := context.Background()
 
