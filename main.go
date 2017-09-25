@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 
-	"cloud.google.com/go/translate"
 	"github.com/divanvisagie/ui"
 )
 
@@ -15,13 +14,11 @@ var window *ui.Window
 
 var jsonFileStore *JSONFileStore
 
-// var targetLanguageStore *StringStore
 var targetJSONKeyStore *StringStore
 var sourceFilePathStore *StringStore
-var destinationFilePathStore *StringStore
 var translatedJSONFileStore *StringStore
 
-func createSourceInputBox(targetLanguageStore *StringStore) *ui.Box {
+func createSourceInputBox(targetLanguageStore *StringStore, destinationFilePathStore *StringStore) *ui.Box {
 	sourcePath := ui.NewEntry()
 
 	go func() {
@@ -54,29 +51,6 @@ func createSourceInputBox(targetLanguageStore *StringStore) *ui.Box {
 	return sourceBox
 }
 
-func createDestinationInputBox() *ui.Box {
-	sourcePath := ui.NewEntry()
-	destinationFilePathStore.SetValue("")
-
-	openDestinationButton := ui.NewButton("...")
-	sourceBox := ui.NewHorizontalBox()
-	sourceBox.SetPadded(false)
-	sourceBox.Append(sourcePath, true)
-	sourceBox.Append(openDestinationButton, false)
-
-	go func() {
-		for destination := range destinationFilePathStore.channel {
-			sourcePath.SetText(destination)
-		}
-	}()
-
-	openDestinationButton.OnClicked(func(*ui.Button) {
-		destinationFilePath := ui.SaveFile(window)
-		sourcePath.SetText(destinationFilePath)
-	})
-	return sourceBox
-}
-
 func createGoogleTranslateSetupBox() *ui.Box {
 	entry := ui.NewEntry()
 	entry.SetText(apiKey)
@@ -96,16 +70,15 @@ func createGoogleTranslateSetupBox() *ui.Box {
 	return box
 }
 
-func populateLanguages() ([]translate.Language, error) {
-	if apiKey == "" {
-		return nil, fmt.Errorf("apikey is empty")
-	}
-	languages, err := ListSupportedLanguages(apiKey, "en")
-	return languages, err
-}
-
 func main() {
 	err := ui.Main(func() {
+		jsonFileStore = CreateJSONFileStore()
+		targetLanguageStore := CreateStringStore()
+		targetJSONKeyStore = CreateStringStore()
+		sourceFilePathStore = CreateStringStore()
+		destinationFilePathStore := CreateStringStore()
+		translatedJSONFileStore = CreateStringStore()
+
 		window = ui.NewWindow("JSON Translator", 500, 500, false)
 		box := ui.NewVerticalBox()
 
@@ -121,13 +94,6 @@ func main() {
 			ioutil.WriteFile(destinationFilePathStore.value, data, 0644)
 		})
 
-		jsonFileStore = CreateJSONFileStore()
-		targetLanguageStore := CreateStringStore()
-		targetJSONKeyStore = CreateStringStore()
-		sourceFilePathStore = CreateStringStore()
-		destinationFilePathStore = CreateStringStore()
-		translatedJSONFileStore = CreateStringStore()
-
 		editor := CreateEditor(targetLanguageStore)
 		go func() {
 			for jsonFile := range jsonFileStore.channel {
@@ -137,9 +103,9 @@ func main() {
 
 		box.Append(createGoogleTranslateSetupBox(), false)
 		box.Append(ui.NewLabel("Select Source File:"), false)
-		box.Append(createSourceInputBox(targetLanguageStore), false)
+		box.Append(createSourceInputBox(targetLanguageStore, destinationFilePathStore), false)
 		box.Append(ui.NewLabel("Select Destination File:"), false)
-		box.Append(createDestinationInputBox(), false)
+		box.Append(CreateDestinationInputBox(destinationFilePathStore), false)
 		box.Append(CreateLanguageSelector(targetLanguageStore, destinationFilePathStore), false)
 		box.Append(editor.box, true)
 		box.Append(saveButton, false)

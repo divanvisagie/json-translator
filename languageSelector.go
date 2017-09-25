@@ -3,9 +3,19 @@ package main
 import (
 	"fmt"
 
+	"cloud.google.com/go/translate"
 	"github.com/divanvisagie/ui"
 )
 
+func populateLanguages() ([]translate.Language, error) {
+	if apiKey == "" {
+		return nil, fmt.Errorf("apikey is empty")
+	}
+	languages, err := ListSupportedLanguages(apiKey, "en")
+	return languages, err
+}
+
+// CreateLanguageSelector creates the combobox that is used to select a languague to translate to
 func CreateLanguageSelector(targetLanguageStore *StringStore, destinationFilePathStore *StringStore) *ui.Combobox {
 
 	options, _ := populateLanguages()
