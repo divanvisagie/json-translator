@@ -7,6 +7,12 @@ import (
 	"github.com/divanvisagie/ui"
 )
 
+type EditorView struct {
+	box          *ui.Box
+	keySelector  *ui.Combobox
+	inputTextBox *ui.MultilineEntry
+}
+
 func translatePhrase(word string) (string, error) {
 	translation, err := TranslateText(targetLanguageStore.value, word, apiKey)
 	if err != nil {
@@ -62,8 +68,19 @@ func createMiddleSection(outputJSONControl *ui.MultilineEntry) (*ui.Box, *ui.Com
 	return box, combobox
 }
 
+//SetJson sets the json file that the editor is working with
+func (e *EditorView) SetJson(jsonFile *JSONFile) {
+	e.inputTextBox.SetText(jsonFile.ToString())
+
+	parsed, _ := jsonFile.Parse()
+	object := parsed[0]
+	for k := range object {
+		e.keySelector.Append(k)
+	}
+}
+
 // CreateEditor creates a box that contains all the json editing related stuff
-func CreateEditor() *ui.Box {
+func CreateEditor() EditorView {
 
 	box := ui.NewHorizontalBox()
 	box.SetPadded(true)
@@ -76,16 +93,16 @@ func CreateEditor() *ui.Box {
 	box.Append(middleBox, true)
 	box.Append(outputJSONControl, true)
 
-	go func() {
-		for jsonFile := range jsonFileStore.channel {
-			inputJSONControl.SetText(jsonFile.ToString())
-			parsed, _ := jsonFile.Parse()
-			object := parsed[0]
-			for k := range object {
-				combobox.Append(k)
-			}
-		}
-	}()
+	// go func() {
+	// 	for jsonFile := range jsonFileStore.channel {
+	// 		inputJSONControl.SetText(jsonFile.ToString())
+	// 		parsed, _ := jsonFile.Parse()
+	// 		object := parsed[0]
+	// 		for k := range object {
+	// 			combobox.Append(k)
+	// 		}
+	// 	}
+	// }()
 
-	return box
+	return EditorView{box, combobox, inputJSONControl}
 }

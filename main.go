@@ -172,6 +172,11 @@ func main() {
 		translatedJSONFileStore = CreateStringStore()
 
 		editor := CreateEditor()
+		go func() {
+			for jsonFile := range jsonFileStore.channel {
+				editor.SetJson(jsonFile)
+			}
+		}()
 
 		box.Append(createGoogleTranslateSetupBox(), false)
 		box.Append(ui.NewLabel("Select Source File:"), false)
@@ -179,7 +184,7 @@ func main() {
 		box.Append(ui.NewLabel("Select Destination File:"), false)
 		box.Append(createDestinationInputBox(), false)
 		box.Append(createLanguageSelector(), false)
-		box.Append(editor, true)
+		box.Append(editor.box, true)
 		box.Append(saveButton, false)
 
 		window.SetChild(box)
@@ -196,6 +201,7 @@ func main() {
 			return true
 		})
 		window.Show()
+
 	})
 	if err != nil {
 		log.Fatalln(err)
