@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"strings"
 
 	"cloud.google.com/go/translate"
 	"github.com/divanvisagie/ui"
@@ -22,20 +21,6 @@ var sourceFilePathStore *StringStore
 var destinationFilePathStore *StringStore
 var translatedJSONFileStore *StringStore
 
-func guessTarget(targetLanguageStore *StringStore) string {
-	if sourceFilePathStore.value == "" {
-		return ""
-	}
-	if targetLanguageStore.value == "" {
-		return ""
-	}
-
-	p := sourceFilePathStore.value
-	split := strings.Split(p, ".")
-	split[0] += ("-" + targetLanguageStore.value)
-	return strings.Join(split, ".")
-}
-
 func createSourceInputBox(targetLanguageStore *StringStore) *ui.Box {
 	sourcePath := ui.NewEntry()
 
@@ -48,7 +33,7 @@ func createSourceInputBox(targetLanguageStore *StringStore) *ui.Box {
 			fmt.Println(jsonFile.ToString())
 
 			if destinationFilePathStore.value == "" {
-				guess := guessTarget(targetLanguageStore)
+				guess := GuessTarget(targetLanguageStore)
 				destinationFilePathStore.SetValue(guess)
 			}
 		}
@@ -119,35 +104,6 @@ func populateLanguages() ([]translate.Language, error) {
 	return languages, err
 }
 
-func createLanguageSelector(targetLanguageStore *StringStore) *ui.Combobox {
-
-	options, _ := populateLanguages()
-
-	validKey := IsAPIKeyValid(apiKey)
-	if !validKey {
-		ui.MsgBoxError(window, "Error", "API key is not valid, set GOOGLE_API_KEY in your environment variables")
-	}
-
-	selector := ui.NewCombobox()
-
-	for _, l := range options {
-		selector.Append(l.Tag.String())
-	}
-
-	selector.OnSelected(func(c *ui.Combobox) {
-		itemIndex := c.Selected()
-		languageCode := options[itemIndex].Tag.String()
-		targetLanguageStore.SetValue(languageCode)
-		fmt.Println(languageCode)
-
-		if destinationFilePathStore.value == "" {
-			guess := guessTarget(targetLanguageStore)
-			destinationFilePathStore.SetValue(guess)
-		}
-	})
-	return selector
-}
-
 func main() {
 	err := ui.Main(func() {
 		window = ui.NewWindow("JSON Translator", 500, 500, false)
@@ -184,7 +140,7 @@ func main() {
 		box.Append(createSourceInputBox(targetLanguageStore), false)
 		box.Append(ui.NewLabel("Select Destination File:"), false)
 		box.Append(createDestinationInputBox(), false)
-		box.Append(createLanguageSelector(targetLanguageStore), false)
+		box.Append(CreateLanguageSelector(targetLanguageStore, destinationFilePathStore), false)
 		box.Append(editor.box, true)
 		box.Append(saveButton, false)
 
