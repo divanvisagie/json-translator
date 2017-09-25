@@ -5,8 +5,22 @@ A tool that translates json files via Google Translate
 
 ![Screenshot](docs/images/screenshot.png)
 
-Running 
+## Running 
+
+
+Windows
 
 ```sh
-go run .\main.go .\editor.go .\parser.go .\translation.go .\jsonFileStore.go .\stringStore.go
+go build ; .\JSON-translator.exe
 ```
+
+
+Other
+
+```sh
+go build && ./JSON-translator
+```
+
+
+### License
+Apache 2
