@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -17,39 +16,6 @@ var jsonFileStore *JSONFileStore
 var targetJSONKeyStore *StringStore
 var sourceFilePathStore *StringStore
 var translatedJSONFileStore *StringStore
-
-func createSourceInputBox(targetLanguageStore *StringStore, destinationFilePathStore *StringStore) *ui.Box {
-	sourcePath := ui.NewEntry()
-
-	go func() {
-		for sourceFilePath := range sourceFilePathStore.channel {
-			sourcePath.SetText(sourceFilePath)
-			fmt.Println("Load file:", sourceFilePath)
-			jsonFile := ReadJsonFromFile(sourceFilePath)
-			jsonFileStore.SetJsonFile(&jsonFile)
-			fmt.Println(jsonFile.ToString())
-
-			if destinationFilePathStore.value == "" {
-				guess := GuessTarget(targetLanguageStore)
-				destinationFilePathStore.SetValue(guess)
-			}
-		}
-	}()
-
-	sourceFilePathStore.SetValue("")
-
-	openSourceButton := ui.NewButton("...")
-	sourceBox := ui.NewHorizontalBox()
-	sourceBox.SetPadded(false)
-	sourceBox.Append(sourcePath, true)
-	sourceBox.Append(openSourceButton, false)
-	openSourceButton.OnClicked(func(*ui.Button) {
-		sourceFilePath := ui.OpenFile(window)
-		sourceFilePathStore.SetValue(sourceFilePath)
-	})
-
-	return sourceBox
-}
 
 func createGoogleTranslateSetupBox() *ui.Box {
 	entry := ui.NewEntry()
@@ -103,7 +69,7 @@ func main() {
 
 		box.Append(createGoogleTranslateSetupBox(), false)
 		box.Append(ui.NewLabel("Select Source File:"), false)
-		box.Append(createSourceInputBox(targetLanguageStore, destinationFilePathStore), false)
+		box.Append(CreateSourceInputBox(targetLanguageStore, destinationFilePathStore), false)
 		box.Append(ui.NewLabel("Select Destination File:"), false)
 		box.Append(CreateDestinationInputBox(destinationFilePathStore), false)
 		box.Append(CreateLanguageSelector(targetLanguageStore, destinationFilePathStore), false)
