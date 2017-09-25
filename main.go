@@ -174,7 +174,7 @@ func main() {
 		editor := CreateEditor()
 		go func() {
 			for jsonFile := range jsonFileStore.channel {
-				editor.SetJson(jsonFile)
+				editor.SetJSON(jsonFile)
 			}
 		}()
 

@@ -68,8 +68,8 @@ func createMiddleSection(outputJSONControl *ui.MultilineEntry) (*ui.Box, *ui.Com
 	return box, combobox
 }
 
-//SetJson sets the json file that the editor is working with
-func (e *EditorView) SetJson(jsonFile *JSONFile) {
+//SetJSON sets the json file that the editor is working with
+func (e *EditorView) SetJSON(jsonFile *JSONFile) {
 	e.inputTextBox.SetText(jsonFile.ToString())
 
 	parsed, _ := jsonFile.Parse()
