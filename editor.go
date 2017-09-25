@@ -43,7 +43,7 @@ func translateJSONWithKey(targetLanguageStore *StringStore, jsonF *JSONFile, key
 	return string(b)
 }
 
-func createMiddleSection(targetLanguageStore *StringStore, outputJSONControl *ui.MultilineEntry) (*ui.Box, *ui.Combobox) {
+func createMiddleSection(targetLanguageStore *StringStore, jsonFileStore *JSONFileStore, outputJSONControl *ui.MultilineEntry) (*ui.Box, *ui.Combobox) {
 	box := ui.NewVerticalBox()
 
 	button := ui.NewButton("Translate")
@@ -80,14 +80,14 @@ func (e *EditorView) SetJSON(jsonFile *JSONFile) {
 }
 
 // CreateEditor creates a box that contains all the json editing related stuff
-func CreateEditor(targetLanguageStore *StringStore) EditorView {
+func CreateEditor(targetLanguageStore *StringStore, jsonFileStore *JSONFileStore) EditorView {
 
 	box := ui.NewHorizontalBox()
 	box.SetPadded(true)
 	inputJSONControl := ui.NewMultilineEntry()
 	outputJSONControl := ui.NewMultilineEntry()
 
-	middleBox, combobox := createMiddleSection(targetLanguageStore, outputJSONControl)
+	middleBox, combobox := createMiddleSection(targetLanguageStore, jsonFileStore, outputJSONControl)
 
 	box.Append(inputJSONControl, true)
 	box.Append(middleBox, true)

@@ -6,7 +6,7 @@ import (
 	"github.com/divanvisagie/ui"
 )
 
-func CreateSourceInputBox(targetLanguageStore *StringStore, destinationFilePathStore *StringStore) *ui.Box {
+func CreateSourceInputBox(targetLanguageStore *StringStore, destinationFilePathStore *StringStore, jsonFileStore *JSONFileStore) *ui.Box {
 	sourcePath := ui.NewEntry()
 
 	go func() {
