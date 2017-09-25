@@ -15,13 +15,14 @@ var apiKey = os.Getenv("GOOGLE_API_KEY")
 var window *ui.Window
 
 var jsonFileStore *JSONFileStore
-var targetLanguageStore *StringStore
+
+// var targetLanguageStore *StringStore
 var targetJSONKeyStore *StringStore
 var sourceFilePathStore *StringStore
 var destinationFilePathStore *StringStore
 var translatedJSONFileStore *StringStore
 
-func guessTarget() string {
+func guessTarget(targetLanguageStore *StringStore) string {
 	if sourceFilePathStore.value == "" {
 		return ""
 	}
@@ -35,7 +36,7 @@ func guessTarget() string {
 	return strings.Join(split, ".")
 }
 
-func createSourceInputBox() *ui.Box {
+func createSourceInputBox(targetLanguageStore *StringStore) *ui.Box {
 	sourcePath := ui.NewEntry()
 
 	go func() {
@@ -47,7 +48,7 @@ func createSourceInputBox() *ui.Box {
 			fmt.Println(jsonFile.ToString())
 
 			if destinationFilePathStore.value == "" {
-				guess := guessTarget()
+				guess := guessTarget(targetLanguageStore)
 				destinationFilePathStore.SetValue(guess)
 			}
 		}
@@ -118,7 +119,7 @@ func populateLanguages() ([]translate.Language, error) {
 	return languages, err
 }
 
-func createLanguageSelector() *ui.Combobox {
+func createLanguageSelector(targetLanguageStore *StringStore) *ui.Combobox {
 
 	options, _ := populateLanguages()
 
@@ -140,7 +141,7 @@ func createLanguageSelector() *ui.Combobox {
 		fmt.Println(languageCode)
 
 		if destinationFilePathStore.value == "" {
-			guess := guessTarget()
+			guess := guessTarget(targetLanguageStore)
 			destinationFilePathStore.SetValue(guess)
 		}
 	})
@@ -165,13 +166,13 @@ func main() {
 		})
 
 		jsonFileStore = CreateJSONFileStore()
-		targetLanguageStore = CreateStringStore()
+		targetLanguageStore := CreateStringStore()
 		targetJSONKeyStore = CreateStringStore()
 		sourceFilePathStore = CreateStringStore()
 		destinationFilePathStore = CreateStringStore()
 		translatedJSONFileStore = CreateStringStore()
 
-		editor := CreateEditor()
+		editor := CreateEditor(targetLanguageStore)
 		go func() {
 			for jsonFile := range jsonFileStore.channel {
 				editor.SetJSON(jsonFile)
@@ -180,10 +181,10 @@ func main() {
 
 		box.Append(createGoogleTranslateSetupBox(), false)
 		box.Append(ui.NewLabel("Select Source File:"), false)
-		box.Append(createSourceInputBox(), false)
+		box.Append(createSourceInputBox(targetLanguageStore), false)
 		box.Append(ui.NewLabel("Select Destination File:"), false)
 		box.Append(createDestinationInputBox(), false)
-		box.Append(createLanguageSelector(), false)
+		box.Append(createLanguageSelector(targetLanguageStore), false)
 		box.Append(editor.box, true)
 		box.Append(saveButton, false)
 

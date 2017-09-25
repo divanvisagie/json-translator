@@ -13,7 +13,7 @@ type EditorView struct {
 	inputTextBox *ui.MultilineEntry
 }
 
-func translatePhrase(word string) (string, error) {
+func translatePhrase(word string, targetLanguageStore *StringStore) (string, error) {
 	translation, err := TranslateText(targetLanguageStore.value, word, apiKey)
 	if err != nil {
 		return "", err
@@ -21,14 +21,14 @@ func translatePhrase(word string) (string, error) {
 	return translation, nil
 }
 
-func translateJSONWithKey(jsonF *JSONFile, key string) string {
+func translateJSONWithKey(targetLanguageStore *StringStore, jsonF *JSONFile, key string) string {
 	parsed, _ := jsonF.Parse()
 	for _, object := range parsed {
 		for k, v := range object {
 			if k != key {
 				continue
 			}
-			translated, err := translatePhrase(v)
+			translated, err := translatePhrase(v, targetLanguageStore)
 			if err != nil {
 				ui.MsgBoxError(window, "Translation Error", err.Error())
 				return ""
@@ -43,12 +43,12 @@ func translateJSONWithKey(jsonF *JSONFile, key string) string {
 	return string(b)
 }
 
-func createMiddleSection(outputJSONControl *ui.MultilineEntry) (*ui.Box, *ui.Combobox) {
+func createMiddleSection(targetLanguageStore *StringStore, outputJSONControl *ui.MultilineEntry) (*ui.Box, *ui.Combobox) {
 	box := ui.NewVerticalBox()
 
 	button := ui.NewButton("Translate")
 	button.OnClicked(func(b *ui.Button) {
-		translatedJSONString := translateJSONWithKey(jsonFileStore.file, targetJSONKeyStore.value)
+		translatedJSONString := translateJSONWithKey(targetLanguageStore, jsonFileStore.file, targetJSONKeyStore.value)
 
 		outputJSONControl.SetText(translatedJSONString)
 		translatedJSONFileStore.SetValue(translatedJSONString)
@@ -80,14 +80,14 @@ func (e *EditorView) SetJSON(jsonFile *JSONFile) {
 }
 
 // CreateEditor creates a box that contains all the json editing related stuff
-func CreateEditor() EditorView {
+func CreateEditor(targetLanguageStore *StringStore) EditorView {
 
 	box := ui.NewHorizontalBox()
 	box.SetPadded(true)
 	inputJSONControl := ui.NewMultilineEntry()
 	outputJSONControl := ui.NewMultilineEntry()
 
-	middleBox, combobox := createMiddleSection(outputJSONControl)
+	middleBox, combobox := createMiddleSection(targetLanguageStore, outputJSONControl)
 
 	box.Append(inputJSONControl, true)
 	box.Append(middleBox, true)
