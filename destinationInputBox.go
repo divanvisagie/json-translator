@@ -4,6 +4,7 @@ import "github.com/divanvisagie/ui"
 
 func CreateDestinationInputBox(destinationFilePathStore *StringStore) *ui.Box {
 	sourcePath := ui.NewEntry()
+	sourcePath.Disable()
 	destinationFilePathStore.SetValue("")
 
 	openDestinationButton := ui.NewButton("...")

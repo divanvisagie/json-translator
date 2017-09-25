@@ -8,6 +8,7 @@ import (
 
 func CreateSourceInputBox(targetLanguageStore *StringStore, destinationFilePathStore *StringStore, jsonFileStore *JSONFileStore) *ui.Box {
 	sourcePath := ui.NewEntry()
+	sourcePath.Disable()
 
 	go func() {
 		for sourceFilePath := range sourceFilePathStore.channel {
