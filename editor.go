@@ -93,16 +93,5 @@ func CreateEditor() EditorView {
 	box.Append(middleBox, true)
 	box.Append(outputJSONControl, true)
 
-	// go func() {
-	// 	for jsonFile := range jsonFileStore.channel {
-	// 		inputJSONControl.SetText(jsonFile.ToString())
-	// 		parsed, _ := jsonFile.Parse()
-	// 		object := parsed[0]
-	// 		for k := range object {
-	// 			combobox.Append(k)
-	// 		}
-	// 	}
-	// }()
-
 	return EditorView{box, combobox, inputJSONControl}
 }
