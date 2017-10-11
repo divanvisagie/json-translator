@@ -1,9 +1,12 @@
 # JSON-translator
 
+[![Build status](https://ci.appveyor.com/api/projects/status/wgnqr47l9f1yurv3/branch/master?svg=true)](https://ci.appveyor.com/project/divanvisagie/json-translator/branch/master)
+
+![Screenshot](docs/images/screenshot.png)
+
 A tool that translates json files via Google Translate
 
 
-![Screenshot](docs/images/screenshot.png)
 
 
 ## Installation Requirements
