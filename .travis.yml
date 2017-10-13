@@ -11,4 +11,6 @@ script:
   - go build
  
 after_success:
+  - brew update
+  - brew install curl
   - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
