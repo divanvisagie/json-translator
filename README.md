@@ -1,5 +1,7 @@
 # JSON-translator
 
+[![Build Status](https://travis-ci.org/divanvisagie/JSON-translator.svg?branch=master)](https://travis-ci.org/divanvisagie/JSON-translator)
+
 [![Build status](https://ci.appveyor.com/api/projects/status/wgnqr47l9f1yurv3/branch/master?svg=true)](https://ci.appveyor.com/project/divanvisagie/json-translator/branch/master)
 
 ![Screenshot](docs/images/screenshot.png)
