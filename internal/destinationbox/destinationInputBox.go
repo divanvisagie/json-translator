@@ -1,8 +1,12 @@
-package main
+package destinationbox
 
-import "github.com/divanvisagie/ui"
+import (
+	. "json-translator/pkg/storage"
 
-func CreateDestinationInputBox(destinationFilePathStore *StringStore) *ui.Box {
+	"github.com/andlabs/ui"
+)
+
+func CreateDestinationInputBox(window *ui.Window, destinationFilePathStore *StringStore) *ui.Box {
 	sourcePath := ui.NewEntry()
 	sourcePath.Disable()
 	destinationFilePathStore.SetValue("")
@@ -14,7 +18,7 @@ func CreateDestinationInputBox(destinationFilePathStore *StringStore) *ui.Box {
 	sourceBox.Append(openDestinationButton, false)
 
 	go func() {
-		for destination := range destinationFilePathStore.channel {
+		for destination := range destinationFilePathStore.Channel {
 			sourcePath.SetText(destination)
 		}
 	}()

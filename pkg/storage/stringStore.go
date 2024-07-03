@@ -1,21 +1,21 @@
-package main
+package storage
 
 import (
 	"fmt"
 )
 
 type StringStore struct {
-	value   string
-	channel chan string
+	Value   string
+	Channel chan string
 }
 
 func (s *StringStore) SetValue(value string) {
-	s.value = value
-	s.channel <- value
+	s.Value = value
+	s.Channel <- value
 }
 
 func (s *StringStore) Destroy() {
-	close(s.channel)
+	close(s.Channel)
 }
 
 func CreateStringStore() *StringStore {

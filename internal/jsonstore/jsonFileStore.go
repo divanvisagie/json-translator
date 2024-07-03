@@ -1,17 +1,21 @@
-package main
+package jsonstore
+
+import (
+	. "json-translator/pkg/parser"
+)
 
 type JSONFileStore struct {
-	file    *JSONFile
-	channel chan *JSONFile
+	File    *JSONFile
+	Channel chan *JSONFile
 }
 
 func (j *JSONFileStore) SetJsonFile(jsonFile *JSONFile) {
-	j.file = jsonFile
-	j.channel <- jsonFile
+	j.File = jsonFile
+	j.Channel <- jsonFile
 }
 
 func (j *JSONFileStore) Destroy() {
-	close(j.channel)
+	close(j.Channel)
 }
 
 // CreateJSONFileStore Creates a new instance

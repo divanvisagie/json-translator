@@ -1,25 +1,29 @@
-package main
+package sourcebox
 
 import (
 	"fmt"
 
-	"github.com/divanvisagie/ui"
+	"github.com/andlabs/ui"
+	. "json-translator/internal/jsonstore"
+	. "json-translator/internal/guesser"
+	. "json-translator/pkg/storage"
+	. "json-translator/pkg/parser"
 )
 
-func CreateSourceInputBox(targetLanguageStore *StringStore, destinationFilePathStore *StringStore, jsonFileStore *JSONFileStore) *ui.Box {
+func CreateSourceInputBox(window *ui.Window ,sourceFilePathStore *StringStore, targetLanguageStore *StringStore, destinationFilePathStore *StringStore, jsonFileStore *JSONFileStore) *ui.Box {
 	sourcePath := ui.NewEntry()
 	sourcePath.Disable()
 
 	go func() {
-		for sourceFilePath := range sourceFilePathStore.channel {
+		for sourceFilePath := range sourceFilePathStore.Channel {
 			sourcePath.SetText(sourceFilePath)
 			fmt.Println("Load file:", sourceFilePath)
 			jsonFile := ReadJsonFromFile(sourceFilePath)
 			jsonFileStore.SetJsonFile(&jsonFile)
 			fmt.Println(jsonFile.ToString())
 
-			if destinationFilePathStore.value == "" {
-				guess := GuessTarget(targetLanguageStore)
+			if destinationFilePathStore.Value == "" {
+				guess := GuessTarget(sourceFilePathStore,targetLanguageStore)
 				destinationFilePathStore.SetValue(guess)
 			}
 		}

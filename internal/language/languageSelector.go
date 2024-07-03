@@ -1,13 +1,16 @@
-package main
+package language
 
 import (
 	"fmt"
 
 	"cloud.google.com/go/translate"
-	"github.com/divanvisagie/ui"
+	"github.com/andlabs/ui"
+	. "json-translator/internal/guesser"
+	. "json-translator/internal/translation"
+	. "json-translator/pkg/storage"
 )
 
-func populateLanguages() ([]translate.Language, error) {
+func populateLanguages(apiKey string) ([]translate.Language, error) {
 	if apiKey == "" {
 		return nil, fmt.Errorf("apikey is empty")
 	}
@@ -16,9 +19,9 @@ func populateLanguages() ([]translate.Language, error) {
 }
 
 // CreateLanguageSelector creates the combobox that is used to select a languague to translate to
-func CreateLanguageSelector(targetLanguageStore *StringStore, destinationFilePathStore *StringStore) *ui.Combobox {
+func CreateLanguageSelector(window *ui.Window, apiKey string, sourceLanguageStore *StringStore, targetLanguageStore *StringStore, destinationFilePathStore *StringStore) *ui.Combobox {
 
-	options, _ := populateLanguages()
+	options, _ := populateLanguages(apiKey)
 
 	validKey := IsAPIKeyValid(apiKey)
 	if !validKey {
@@ -37,8 +40,8 @@ func CreateLanguageSelector(targetLanguageStore *StringStore, destinationFilePat
 		targetLanguageStore.SetValue(languageCode)
 		fmt.Println(languageCode)
 
-		if destinationFilePathStore.value == "" {
-			guess := GuessTarget(targetLanguageStore)
+		if destinationFilePathStore.Value == "" {
+			guess := GuessTarget(sourceLanguageStore, targetLanguageStore)
 			destinationFilePathStore.SetValue(guess)
 		}
 	})

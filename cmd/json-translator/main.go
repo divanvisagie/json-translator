@@ -5,7 +5,13 @@ import (
 	"log"
 	"os"
 
-	"github.com/divanvisagie/ui"
+	"github.com/andlabs/ui"
+	. "json-translator/internal/jsonstore"
+	. "json-translator/pkg/storage"
+	. "json-translator/internal/editor"
+	. "json-translator/internal/sourcebox"
+	. "json-translator/internal/destinationbox"
+	. "json-translator/internal/language"
 )
 
 var apiKey = os.Getenv("GOOGLE_API_KEY")
@@ -30,28 +36,28 @@ func main() {
 		saveButton := ui.NewButton("Save")
 
 		saveButton.OnClicked(func(b *ui.Button) {
-			if destinationFilePathStore.value == "" {
+			if destinationFilePathStore.Value == "" {
 				ui.MsgBoxError(window, "Target path error", "Target path is not defined")
 				return
 			}
 
-			data := []byte(translatedJSONFileStore.value)
-			ioutil.WriteFile(destinationFilePathStore.value, data, 0644)
+			data := []byte(translatedJSONFileStore.Value)
+			ioutil.WriteFile(destinationFilePathStore.Value, data, 0644)
 		})
 
 		editor := CreateEditor(targetLanguageStore, jsonFileStore)
 		go func() {
-			for jsonFile := range jsonFileStore.channel {
+			for jsonFile := range jsonFileStore.Channel {
 				editor.SetJSON(jsonFile)
 			}
 		}()
 
 		box.Append(ui.NewLabel("Select Source File:"), false)
-		box.Append(CreateSourceInputBox(targetLanguageStore, destinationFilePathStore, jsonFileStore), false)
+		box.Append(CreateSourceInputBox(window, sourceFilePathStore,translatedJSONFileStore, destinationFilePathStore, jsonFileStore), false)
 		box.Append(ui.NewLabel("Select Destination File:"), false)
 		box.Append(CreateDestinationInputBox(destinationFilePathStore), false)
 		box.Append(CreateLanguageSelector(targetLanguageStore, destinationFilePathStore), false)
-		box.Append(editor.box, true)
+		box.Append(editor.Box, true)
 		box.Append(saveButton, false)
 
 		window.SetChild(box)
