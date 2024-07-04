@@ -4,42 +4,41 @@ import (
 	"fmt"
 
 	"github.com/andlabs/ui"
-	. "json-translator/internal/jsonstore"
 	. "json-translator/internal/guesser"
-	. "json-translator/pkg/storage"
 	. "json-translator/pkg/parser"
+	. "json-translator/internal/state"
 )
 
-func CreateSourceInputBox(window *ui.Window ,sourceFilePathStore *StringStore, targetLanguageStore *StringStore, destinationFilePathStore *StringStore, jsonFileStore *JSONFileStore) *ui.Box {
+func CreateSourceInputBox(window *ui.Window , state *ApplicationStateStore) *ui.Box {
 	sourcePath := ui.NewEntry()
 	sourcePath.Disable()
 
 	go func() {
-		for sourceFilePath := range sourceFilePathStore.Channel {
-			sourcePath.SetText(sourceFilePath)
-			fmt.Println("Load file:", sourceFilePath)
-			jsonFile := ReadJsonFromFile(sourceFilePath)
-			jsonFileStore.SetJsonFile(&jsonFile)
-			fmt.Println(jsonFile.ToString())
+		for sfp := range state.SourceFilePath.Channel {
+			sourcePath.SetText(sfp)
+			fmt.Println("Load file:", sfp)
+			jf := ReadJsonFromFile(sfp)
+			state.JSONFileStore.SetJsonFile(&jf)
+			fmt.Println(jf.ToString())
 
-			if destinationFilePathStore.Value == "" {
-				guess := GuessTarget(sourceFilePathStore,targetLanguageStore)
-				destinationFilePathStore.SetValue(guess)
+			if state.DestinationFilePath.Value == "" {
+				guess := GuessTarget(state.SourceFilePath,state.TargetLanguage)
+				state.DestinationFilePath.SetValue(guess)
 			}
 		}
 	}()
 
-	sourceFilePathStore.SetValue("")
+	state.SourceFilePath.SetValue("")
 
 	openSourceButton := ui.NewButton("...")
-	sourceBox := ui.NewHorizontalBox()
-	sourceBox.SetPadded(false)
-	sourceBox.Append(sourcePath, true)
-	sourceBox.Append(openSourceButton, false)
+	sb := ui.NewHorizontalBox()
+	sb.SetPadded(false)
+	sb.Append(sourcePath, true)
+	sb.Append(openSourceButton, false)
 	openSourceButton.OnClicked(func(*ui.Button) {
 		sourceFilePath := ui.OpenFile(window)
-		sourceFilePathStore.SetValue(sourceFilePath)
+		state.SourceFilePath.SetValue(sourceFilePath)
 	})
 
-	return sourceBox
+	return sb
 }
